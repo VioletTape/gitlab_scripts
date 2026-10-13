@@ -19,7 +19,7 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .right-sidebar.js-issuable-sidebar.${collapsedClass},
+    .right-sidebar.${collapsedClass},
     [data-testid="detail-layout-sidebar"].${collapsedClass},
     .work-item-overview-right-sidebar.${collapsedClass} { display: none !important; }
     .merge-request-overview.${collapsedClass} { grid-template-columns: minmax(0, 1fr) !important; }
