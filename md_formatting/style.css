@@ -1,0 +1,231 @@
+/*
+ * GitLab's markdown-render wrapper class varies by version/surface (file view, issue,
+ * MR all share the Banzai pipeline but the exact container class isn't confirmed for this
+ * instance). :is(...) groups the known common candidates into one selector so a single
+ * ruleset applies wherever the real class is. To confirm/narrow: inspect a rendered
+ * README, an issue description, and an MR description in devtools, note which class(es)
+ * actually appear, then delete the ones that never match from every :is(...) list below
+ * (safe to remove - they only ever appear inside :is(...), never standalone).
+ *
+ * Colors, backgrounds and borders below are marked !important throughout: GitLab's own
+ * theme CSS drives these via its light/dark theme setting (sometimes through custom
+ * properties or utility classes), and per decision #2 this stylesheet must force the dark
+ * palette regardless of that setting or load order. Structural properties (spacing, sizing,
+ * font-size, font-weight) have no competing GitLab default worth fighting, so they're left
+ * without !important.
+ */
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #e6edf3 !important;
+  background: #0d1117 !important;
+  padding: 24px 32px;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 600;
+  margin: 24px 0 8px;
+  line-height: 1.25;
+  color: #FF8040 !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) h1 {
+  font-size: 2em;
+  border-bottom: 1px solid #21262d !important;
+  padding-bottom: 0.3em;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #21262d !important;
+  padding-bottom: 0.3em;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) p {
+  margin: 0 0 16px;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) code {
+  font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace !important;
+  font-size: 93%;
+  background: #161b22 !important;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: #c9cbff !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre {
+  background: #29323F !important;
+  padding: 16px;
+  border-radius: 6px;
+  overflow: auto;
+  margin-bottom: 16px;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre code {
+  background: none !important;
+  padding: 0;
+  color: inherit !important;
+  font-size: 100%;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) :is(pre, pre code) {
+  font-variant-ligatures: contextual;
+  font-feature-settings: "calt" 1;
+}
+
+/* GitLab wraps each highlighted code line in span#LC<n>.line already - a counter on
+   that existing span is enough for a number gutter, no JS/re-rendering needed. */
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre code {
+  counter-reset: line;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre code .line::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 2.5em;
+  margin-right: 1em;
+  text-align: right;
+  color: #6e7681;
+  user-select: none;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) blockquote {
+  border-left: 3px solid #4d9be6 !important;
+}
+
+/* GitLab tags a leading front-matter block with data-lang-params="frontmatter" regardless of
+   its detected language (yaml/toml/json), so this is a reliable selector, not a guess. */
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre[data-lang-params="frontmatter"] {
+  display: none !important;
+}
+
+/* Set by the userscript on blockquotes whose first line was "!..." (nmd's warning-note convention). */
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) blockquote.nmd-warning {
+  border-left-color: #c94f4f !important;
+  background: #1e2530 !important;
+  padding: 12px 16px;
+  color: #e6edf3 !important;
+  margin-bottom: 16px;
+  border-radius: 0 4px 4px 0;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) table {
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) :is(th, td) {
+  border: 1px solid #30363d !important;
+  padding: 6px 13px;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) th {
+  background: #161b22 !important;
+  font-weight: 600;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) tr:nth-child(even) {
+  background: #161b22 !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) a {
+  color: #58a6ff !important;
+  text-decoration: none;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) a:hover {
+  text-decoration: underline;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) abbr[title] {
+  text-decoration: underline dotted #8b949e;
+  cursor: help;
+  color: #79c0ff !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) img {
+  max-width: 100%;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) :is(ul, ol) {
+  padding-left: 2em;
+  margin-bottom: 16px;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) li {
+  margin: 4px 0;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) hr {
+  border: none;
+  border-top: 1px solid #21262d !important;
+  margin: 24px 0;
+}
+
+/*
+ * nmd.html itself doesn't define per-token syntax colors (those come from Shiki at
+ * render time, out of scope per handover decision 7). nmd's base palette is a near-exact
+ * match for GitHub's dark theme (same background/text/link/code colors), so GitHub Dark's
+ * syntax palette is used here as the closest faithful approximation, applied to GitLab's
+ * own highlighter output instead of re-highlighting.
+ *
+ * Three class schemes are targeted at once, since which one this instance actually emits
+ * is unconfirmed:
+ *  - Rouge (GitLab's server-side highlighter for fenced code blocks and blob view) reuses
+ *    Pygments' short single/double-letter classes (.k, .s, .c, .nf, ...) - well-established
+ *    convention, most likely to be the one that applies. Kept scoped under "pre" because
+ *    these short names are otherwise collision-prone.
+ *  - highlight.js (.hljs-* prefixed) - used by some GitLab surfaces/versions.
+ *  - .gl-token-* is a speculative guess at a possible GitLab-specific naming scheme -
+ *    unconfirmed, included defensively; harmless no-op if it doesn't exist on this instance.
+ * Verify actual classes via devtools on a real highlighted code block and delete whichever
+ * scheme doesn't match.
+ */
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.k, .kd, .kn, .kp, .kr, .kt, .hljs-keyword, .hljs-literal, .gl-token-keyword) {
+  color: #ff7b72 !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.s, .s1, .s2, .sb, .sc, .sd, .se, .sh, .si, .sx, .sr, .ss, .hljs-string, .gl-token-string) {
+  color: #a5d6ff !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.c, .c1, .cm, .cp, .cs, .hljs-comment, .gl-token-comment) {
+  color: #8b949e !important;
+  font-style: italic;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.nf, .hljs-title, .hljs-function, .gl-token-function) {
+  color: #d2a8ff !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.m, .mi, .mf, .mh, .mo, .il, .hljs-number, .gl-token-number) {
+  color: #79c0ff !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.na, .nv, .vc, .vg, .vi, .nc, .nn, .hljs-attr, .hljs-variable, .hljs-params, .hljs-type, .gl-token-attribute, .gl-token-variable, .gl-token-type) {
+  color: #ffa657 !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.nt, .hljs-tag, .hljs-name, .gl-token-tag) {
+  color: #7ee787 !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.o, .p, .hljs-punctuation, .hljs-operator) {
+  color: #c9d1d9 !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.gd, .hljs-deletion) {
+  color: #ffa198 !important;
+  background: #490202 !important;
+}
+
+:is(.md, .md-file, .gl-markdown, .wiki, .description, .issuable-description, .js-markdown-body) pre :is(.gi, .hljs-addition) {
+  color: #7ee787 !important;
+  background: #04260f !important;
+}
