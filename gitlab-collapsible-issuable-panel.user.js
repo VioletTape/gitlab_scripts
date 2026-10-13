@@ -3,6 +3,8 @@
 // @match        https://gitlab.planetabax.com/*
 // @run-at       document-idle
 // @grant        none
+// @version      1.0.0
+// @description  gitlab space saver, collapse issuable details
 // ==/UserScript==
 
 (() => {
@@ -47,9 +49,9 @@
       ? document.querySelector(workItemSidebarSelector)
       : document.querySelector(mergeRequestSidebarSelector)?.closest('.right-sidebar');
     const rail = document.querySelector(railSelector);
-    const anchor = rail?.querySelector('[data-testid="session-ai-icon"]');
+    const tabList = rail?.querySelector('[role="tablist"]');
 
-    if (!sidebar || !rail || !anchor || sidebar.contains(rail)) {
+    if (!sidebar || !rail || !tabList || sidebar.contains(rail)) {
       rail?.querySelectorAll('#tm-issuable-context-divider, #tm-issuable-context-toggle').forEach((element) => element.remove());
       return;
     }
@@ -87,8 +89,9 @@
         sync();
       });
     }
-    if (anchor.nextElementSibling !== divider) anchor.insertAdjacentElement('afterend', divider);
-    if (divider.nextElementSibling !== button) divider.insertAdjacentElement('afterend', button);
+    if (divider.parentElement !== tabList || divider.nextElementSibling !== button || button !== tabList.lastElementChild) {
+      tabList.append(divider, button);
+    }
 
     const label = collapsed ? 'Show assignees and reviewers' : 'Hide assignees and reviewers';
     button.title = label;
