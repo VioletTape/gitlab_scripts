@@ -17,6 +17,16 @@
   const collapsedClass = 'tm-issuable-context-collapsed';
   let collapsed = true;
 
+  // Tampermonkey rail controls use unique ascending data-tm-rail-order values.
+  const placeInRailOrder = (button, tabList) => {
+    const order = Number(button.dataset.tmRailOrder);
+    const nextButton = [...tabList.querySelectorAll('[data-tm-rail-order]')]
+      .find((candidate) => candidate !== button && Number(candidate.dataset.tmRailOrder) > order);
+    if (button.parentElement !== tabList || (nextButton && button.nextElementSibling !== nextButton)) {
+      tabList.insertBefore(button, nextButton);
+    }
+  };
+
   const style = document.createElement('style');
   style.textContent = `
     .right-sidebar.${collapsedClass},
@@ -52,7 +62,7 @@
     const tabList = rail?.querySelector('[role="tablist"]');
 
     if (!sidebar || !rail || !tabList || sidebar.contains(rail)) {
-      rail?.querySelectorAll('#tm-issuable-context-divider, #tm-issuable-context-toggle').forEach((element) => element.remove());
+      rail?.querySelector('#tm-issuable-context-toggle')?.remove();
       return;
     }
 
@@ -60,19 +70,12 @@
     sidebar.classList.toggle(collapsedClass, hideSidebar);
     sidebar.closest('.merge-request-overview, .work-item-overview, .gl-detail-layout-container')?.classList.toggle(collapsedClass, hideSidebar);
 
-    let divider = rail.querySelector('#tm-issuable-context-divider');
-    if (!divider) {
-      divider = document.createElement('div');
-      divider.id = 'tm-issuable-context-divider';
-      divider.className = 'gl-h-5 gl-w-1 gl-border-0 gl-border-r-1 gl-border-solid gl-border-strong lg:gl-mx-auto lg:gl-h-1 lg:gl-w-5 lg:gl-border-r-0 lg:gl-border-t-1';
-      divider.setAttribute('aria-hidden', 'true');
-    }
-
     let button = rail.querySelector('#tm-issuable-context-toggle');
     if (!button) {
       button = document.createElement('button');
       button.id = 'tm-issuable-context-toggle';
       button.type = 'button';
+      button.dataset.tmRailOrder = '20';
       button.innerHTML = `
         <svg viewBox="16 11 68 78" aria-hidden="true" focusable="false">
           <path d="m82.125 75.832v-51.664c0-6.375-5.207-11.582-11.582-11.582l-41.086-0.003907c-6.375 0-11.582 5.207-11.582 11.582v51.668c0 6.375 5.207 11.582 11.582 11.582h41.125c6.375 0.003907 11.543-5.207 11.543-11.582zm-60.082 0v-51.664c0-4.082 3.332-7.418 7.418-7.418h41.125c4.082 0 7.418 3.332 7.418 7.418v51.668c0 4.082-3.332 7.418-7.418 7.418l-41.129-0.003906c-4.125 0-7.4141-3.332-7.4141-7.418z"/>
@@ -89,9 +92,7 @@
         sync();
       });
     }
-    if (divider.parentElement !== tabList || divider.nextElementSibling !== button || button !== tabList.lastElementChild) {
-      tabList.append(divider, button);
-    }
+    placeInRailOrder(button, tabList);
 
     const label = collapsed ? 'Show assignees and reviewers' : 'Hide assignees and reviewers';
     button.title = label;
